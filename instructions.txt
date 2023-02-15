@@ -1,0 +1,19 @@
+Welcome user, these are the insructions 
+regarding adding a new contact to the 
+catalog.
+
+1.Name and Number is a mandatory field
+2.If you choose not to fill any of the 
+  optional fields, then leave it blank
+3.In the category section,you can write 
+  Family,Friends,Work,Others.If 
+  unfilled the section is stored as 
+  Others
+4.For DOB the format is dd-mm-yyyy,
+  Use '-' and not '/', else it shows
+  invalid
+5.Number section should only contain 
+  numbers else it shows invalid
+
+Feel free to add as many contacts as 
+you want

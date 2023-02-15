@@ -1,0 +1,682 @@
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+import pandas as pd
+import numpy as np
+from PIL import ImageTk, Image
+pb=pd.read_csv('phonebookdata.csv')
+arc=pd.read_csv('backup.csv')
+phone_book=np.array(pb)
+print(phone_book)
+m=tk.Tk()
+def add():
+    m.iconify()
+    print('okay')
+    def add_contact():
+        flag = True
+        name = (entryname.get()).strip()
+        num = entrynumber.get()
+        email = (entryemail.get()).strip()
+        date = entryDOB.get()
+        cat = (entrycat.get()).strip()
+        #1 for name condition
+        if name != '':
+               flag = True
+               #2 for email condition
+               if email =='':
+                  email = 'none'
+                  #3 for DOB condition
+                  if date == '':
+                      date = 'none'
+                  else:
+                     for i in range(1):
+                        if len(date)!=10:
+                            flag = False
+                            break
+                        if date[2]=='-' and date[5]=='-':
+                            dd,mm,yyyy=date.split('-')
+                            dd=int(dd)
+                            mm=int(mm)
+                            yyyy=int(yyyy)
+                            last=0
+                            if mm==1 or mm==3 or mm==5 or mm==7 or mm==8 or mm==10 or mm==12:
+                                last=31
+                            elif mm==4 or mm==6 or mm==9 or mm==11:
+                                last=30
+                            else:
+                                if(yyyy%400==0 or (yyyy%4==0 and yyyy%100!=0)):
+                                    last=29
+                                else:
+                                    last=28
+                            if(dd<1 or dd>last or mm<1 or mm>12):
+                                flag = False
+                                break
+                            else:
+                                flag = True
+                                break
+                        else:
+                            flag =False
+                            break
+                  #4 for Category
+                  if cat == "Family" or cat == "Friends" or cat == "Work" :
+                     print('working')
+                  else:
+                     cat  = 'Others'
+        else:
+            flag = False
+        #5 for number condition
+        if num.isnumeric() == False:
+            flag = False
+        if flag == False:
+           print('not okay')
+           LabelX = tk.Label(adding, text='Some details are Invalid, Read instructions!!' , height=3, bg="#DDFA4C")
+           LabelX.config(font=('Roboto' , 22))
+           LabelX.grid(row=10,column=0)
+        else:
+           pb.loc[len(pb)] = [name,num,email,date,cat]
+           arc.loc[len(arc)] = [name,num,email,date,cat]
+           pb.to_csv("phonebookdata.csv", index=False)
+           arc.to_csv("backup.csv", index=False) 
+           messagebox.showinfo("process completed","contact has been added to the phonebook")
+           adding.destroy()
+    def instruction():
+        def openFile():
+            tf=open("instructions.txt",'r')
+            data = tf.read()
+            txtarea.insert(tk.END,data)
+            tf.close()
+            b2=tk.Button(ws, text="Exit", command=ws.destroy)
+            b2.config(font=('Roboto' , 10))
+            b2.pack(side=tk.RIGHT, expand=True, fill=tk.X, padx=20)
+            b1['state']='disabled'
+        ws = tk.Toplevel()
+        ws.title("Instructions")
+        ws.minsize(400,400)
+
+        txtarea = tk.Text(ws, width=40, height=20)
+        txtarea.pack(pady=20)
+        b1=tk.Button(ws, text="Display Instructions", command=openFile)
+        b1.config(font=('Roboto' , 10))
+        b1.pack(side=tk.RIGHT,expand=True, fill=tk.X, padx=20)
+        ws.mainloop()
+                
+    adding = tk.Toplevel(m)
+    adding.minsize(1300,650)
+    adding.title('add a contact')
+    adding.config(bg="#DDFA4C")
+    Label0 = tk.Label(adding, text='Add a Contact!!', height=1, bg="#DDFA4C")
+    Label1 = tk.Label(adding, text='Please Enter details!!' , height=3, bg="#DDFA4C")
+    Label2 = tk.Label(adding, text='Name', height=1, bg="#DDFA4C")
+    Label3 = tk.Label(adding, text='Number' , height=1, bg="#DDFA4C")
+    Label4 = tk.Label(adding, text='Email' , height=1, bg="#DDFA4C")
+    Label5 = tk.Label(adding, text='Date of Birth' , height=1, bg="#DDFA4C")
+    Label6 = tk.Label(adding, text='Category' , height=1, bg="#DDFA4C")
+    entryname = tk.Entry(adding)
+    entrynumber = tk.Entry(adding)
+    entryemail = tk.Entry(adding)
+    entryDOB = tk.Entry(adding)
+    entrycat = tk.Entry(adding)
+    button1 = tk.Button(adding, text = "Submit", pady=10,width=15, command =add_contact, bg="#DDFA4C")
+    button2 = tk.Button(adding, text = "Exit from menu", pady=10,width=15, command =adding.destroy,bg="#DDFA4C")
+    button3 = tk.Button(adding, text = "Read Instructions", pady=10,width=15, command =instruction, bg="#DDFA4C")
+    Label0.config(font=('Roboto' , 40))
+    Label1.config(font=('Roboto' , 22))
+    Label2.config(font=('Roboto' , 22))
+    Label3.config(font=('Roboto' , 22))
+    Label4.config(font=('Roboto' , 22))
+    Label5.config(font=('Roboto' , 22))
+    Label6.config(font=('Roboto' , 22))
+    button1.config(font=('Roboto' , 22))
+    button2.config(font=('Roboto' , 22))
+    button3.config(font=('Roboto' , 11))
+    entryname.config(font=('Roboto' , 22 ))
+    entrynumber.config(font=('Roboto' , 22))
+    entryemail.config(font=('Roboto' , 22))
+    entryDOB.config(font=('Roboto' , 22))
+    entrycat.config(font=('Roboto' , 22))
+    Label0.grid(row=1,column=0, rowspan=9, padx=175)
+    Label1.grid(row=1,column=1, columnspan = 3)
+    Label2.grid(row=2,column=1)
+    Label3.grid(row=3,column=1)
+    Label4.grid(row=4,column=1)
+    Label5.grid(row=5,column=1)
+    Label6.grid(row=6,column=1)
+    entryname.grid(row=2,column=2, columnspan = 2,padx=2,pady=10)
+    entrynumber.grid(row=3,column=2, columnspan = 2,padx=2,pady=10)
+    entryemail.grid(row=4,column=2, columnspan = 2,padx=2,pady=10)
+    entryDOB.grid(row=5,column=2, columnspan = 2,padx=2,pady=10)
+    entrycat.grid(row=6,column=2, columnspan = 2,padx=2,pady=10)
+    button1.grid(row=9,column=2, columnspan = 1,pady=15)
+    button2.grid(row=10,column=2, columnspan = 1)               
+    button3.grid(row=9,column=1)
+    adding.mainloop()
+
+def deleting():
+    m.iconify()
+    global flag
+    def ru_sure1():
+        global flag
+        def delone():
+            flag = False
+            nameX = entryname.get()
+            for i in range(0,len(pb)):
+                if nameX == pb.Name[i]:
+                   print('contact availible')
+                   flag = True
+                   break
+                else:
+                   flag = False
+                   #print('contact unavailible')
+            return flag
+        if delone() == True:
+           msg=messagebox.askquestion("confirm","Are you sure you want to delete this contact?")
+           if msg=='yes':
+              messagebox.showinfo("process completed","contact has been deleted")
+              name = entryname.get()
+              pb.drop(pb.index[(pb["Name"] == name)],inplace=True, axis=0)
+              pb.to_csv('phonebookdata.csv',index=False)
+              print(pb)
+              deli.destroy()
+        else:
+           Label1 = tk.Label(deli, text="Contact name is unavailible" , height=3, bg="#73D0D6")
+           Label1.config(font=('Roboto' , 22))
+           Label1.grid(row=8,column=1, rowspan=2,padx=200)
+        return pb   
+  
+    def ru_sure2():
+        def delall():
+            for i in range(0,len(pb)):
+                pb.drop(i,inplace=True, axis=0)
+                pb.to_csv('phonebookdata.csv',index=False)
+            return pb
+        msg=messagebox.askquestion("deleting all","Are you sure you want to clear all contacts?")
+        deli.destroy()
+        if msg=='yes':
+           delall() 
+           messagebox.showinfo("process completed","all contacts have Been deleted")
+        else:
+           messagebox.showerror("error","Process Failed")
+    deli = tk.Toplevel(m)
+    deli.config(bg="#73D0D6")
+    deli.title('deleting a contact')
+    deli.minsize(770,550)
+    Label1 = tk.Label(deli, text="Deleting a contact" , height=3, bg="#73D0D6")
+    Label2 = tk.Label(deli, text='Enter Name of contact to be deleted', height=1, bg="#73D0D6")
+    entryname = tk.Entry(deli)
+    button1=tk.Button(deli,text="Submit",padx=10,pady=7,command=ru_sure1, bg="#73D0D6")
+    button2 = tk.Button(deli, text = "Exit from menu",padx=10,pady=7,command =deli.destroy, bg="#73D0D6")
+    button3 = tk.Button(deli, text = "Clear all contacts",padx=10,pady=7,command =ru_sure2, bg="#AD384E")
+    Label1.config(font=('Roboto' , 30))
+    Label2.config(font=('Roboto' , 18))
+    button1.config(font=('Roboto' , 15))
+    button2.config(font=('Roboto' , 15))
+    button3.config(font=('Roboto' , 18))
+    entryname.config(font=('Roboto' , 18))
+    entryname.grid(row=4,column=1, columnspan = 1, pady=5)
+    Label1.grid(row=1,column=1, rowspan=2,padx=200)
+    Label2.grid(row=3,column=1,columnspan=2)
+    button1.grid(row=5,column=1, columnspan = 2, pady=5)
+    button2.grid(row=6,column=1, columnspan = 2, pady=5)
+    button3.grid(row=7,column=1, columnspan = 2, pady=5)
+    deli.mainloop() 
+        
+
+def search_existing():
+    def namesearch():
+        def subnamesearch():
+            L=[]
+            s = entryX.get()
+            pbU=pd.read_csv('phonebookdata.csv')
+            phone_bookU=np.array(pbU)
+            for i in range(0,len(pbU)):
+                if (s == pb.Name[i]):
+                    L.append(phone_bookU[i])
+            if len(L) == 0:
+                Label1 = tk.Label(sea, text="Contact name is not present, please try again" , height=3, bg="#DDAE66")
+                Label1.config(font=('Roboto' , 18))
+                Label1.grid(row=8,column=1, rowspan=2,padx=170)
+            else:
+                global test
+                test = False
+                def show():
+                    global test
+                    if test == True:
+                       labelX=tk.Label(disp, text="All records exhausted", font=("Roboto",20),bg="#DDAE66")
+                       labelX.grid(row=6,column=0,columnspan=5)
+                    else:
+                       for i,(Name,Number,Email,DOB,Category) in enumerate(L, start=1): #used to add an serial no
+                           Numberstr = str(Number)
+                           numtemp = Numberstr.strip('.0')
+                           listBox.insert('',"end", values=(i,Name,numtemp,Email,DOB,Category))
+                       test = True
+                sea.destroy()
+                disp = tk.Toplevel(m)
+                disp.minsize(1200,380)
+                disp.config(bg="#DDAE66")
+                style = ttk.Style(disp)
+                style.theme_use("clam")
+                disp.config(bg="#DDAE66")
+                label = tk.Label(disp, text="Here is what we found", font=("Roboto",32),bg="#DDAE66")
+                label.grid(row=0, columnspan=5)
+                # create Treeview with 6 columns
+                cols = ('S.No','Name','Number','Email','DOB','Category')
+                listBox = ttk.Treeview(disp,columns=cols, show='headings')
+                # set column headings
+                for col in cols:
+                  listBox.heading(col,text=col)    
+                listBox.grid(row=1, column=0, columnspan=3)
+                showall_rec= tk.Button(disp, text="Show all records", width=12, command=show,bg="#DDAE66")
+                showall_rec.config(font=('Roboto' , 10))
+                showall_rec.grid(row=4, column=0)
+                close_rec= tk.Button(disp, text="Back to menu", width=12, command=disp.destroy,bg="#DDAE66")
+                close_rec.config(font=('Roboto' , 10))
+                close_rec.grid(row=4, column=2)
+                disp.mainloop()
+    
+             
+        sea = tk.Toplevel(m)
+        sea.config(bg="#DDAE66")
+        sea.title('Search by name')
+        sea.minsize(800,500)
+        Label1 = tk.Label(sea, text="Search by name" , height=3, bg="#DDAE66")
+        Label2 = tk.Label(sea, text='Enter Name of contact to be searched', height=1, bg="#DDAE66")
+        entryX = tk.Entry(sea)
+        button1=tk.Button(sea,text="Search",padx=10,pady=7,command=subnamesearch, bg="#DDAE66")
+        button2 = tk.Button(sea, text = "Exit from menu",padx=10,pady=7,command =sea.destroy, bg="#DDAE66")
+        Label1.config(font=('Roboto' , 30))
+        Label2.config(font=('Roboto' , 18))
+        button1.config(font=('Roboto' , 15))
+        button2.config(font=('Roboto' , 15))
+        entryX.config(font=('Roboto' , 18))
+        entryX.grid(row=4,column=1, columnspan = 1, pady=5)
+        Label1.grid(row=1,column=1, rowspan=2,padx=250)
+        Label2.grid(row=3,column=1,columnspan=2,)
+        button1.grid(row=5,column=1, columnspan = 2, pady=5)
+        button2.grid(row=6,column=1, columnspan = 2, pady=5)
+        mx.destroy()
+        sea.mainloop()
+
+    def nosearch():
+        def subnosearch():
+            L=[]
+            s = entryX.get()
+            pbU=pd.read_csv('phonebookdata.csv')
+            phone_bookU=np.array(pbU)
+            for i in range(0,len(pbU)):
+                a = str(pb.Number[i])
+                if (s == a):
+                    L.append(phone_bookU[i])
+            if len(L) == 0:
+                Label1 = tk.Label(sea, text="Contact number is not present, please try again" , height=3, bg="#D3A45A")
+                Label1.config(font=('Roboto' , 18))
+                Label1.grid(row=8,column=1, rowspan=2,padx=170)
+            else:
+                global test
+                test = False
+                def show():
+                    global test
+                    if test == True:
+                       labelX=tk.Label(disp, text="All records exhausted", font=("Roboto",20),bg="#D3A45A")
+                       labelX.grid(row=6,column=0,columnspan=5)
+                    else:
+                       for i,(Name,Number,Email,DOB,Category) in enumerate(L, start=1): #used to add an serial no
+                           Numberstr = str(Number)
+                           numtemp = Numberstr.strip('.0')
+                           listBox.insert('',"end", values=(i,Name,numtemp,Email,DOB,Category))
+                       test = True
+                sea.destroy()
+                disp = tk.Toplevel(m)
+                disp.minsize(1200,380)
+                disp.config(bg="#D3A45A")
+                style = ttk.Style(disp)
+                style.theme_use("clam")
+                disp.config(bg="#D3A45A")
+                label = tk.Label(disp, text="Here is what we found", font=("Roboto",32),bg="#D3A45A")
+                label.grid(row=0, columnspan=5)
+                # create Treeview with 6 columns
+                cols = ('S.No','Name','Number','Email','DOB','Category')
+                listBox = ttk.Treeview(disp,columns=cols, show='headings')
+                # set column headings
+                for col in cols:
+                  listBox.heading(col,text=col)    
+                listBox.grid(row=1, column=0, columnspan=3)
+                showall_rec= tk.Button(disp, text="Show all records", width=12, command=show,bg="#D3A45A")
+                showall_rec.config(font=('Roboto' , 10))
+                showall_rec.grid(row=4, column=0)
+                close_rec= tk.Button(disp, text="Back to menu", width=12, command=disp.destroy,bg="#D3A45A")
+                close_rec.config(font=('Roboto' , 10))
+                close_rec.grid(row=4, column=2)
+                disp.mainloop()
+        sea = tk.Toplevel(m)
+        sea.config(bg="#D3A45A")
+        sea.title('Search by number')
+        sea.minsize(800,500)
+        Label1 = tk.Label(sea, text="Search by number" , height=3, bg="#D3A45A")
+        Label2 = tk.Label(sea, text='Enter Number of contact to be searched', height=1, bg="#D3A45A")
+        entryX = tk.Entry(sea)
+        button1=tk.Button(sea,text="Search",padx=10,pady=7,command=subnosearch, bg="#D3A45A")
+        button2 = tk.Button(sea, text = "Exit from menu",padx=10,pady=7,command =sea.destroy, bg="#D3A45A")
+        Label1.config(font=('Roboto' , 30))
+        Label2.config(font=('Roboto' , 18))
+        button1.config(font=('Roboto' , 15))
+        button2.config(font=('Roboto' , 15))
+        entryX.config(font=('Roboto' , 18))
+        entryX.grid(row=4,column=1, columnspan = 1, pady=5)
+        Label1.grid(row=1,column=1, rowspan=2,padx=250)
+        Label2.grid(row=3,column=1,columnspan=2)
+        button1.grid(row=5,column=1, columnspan = 2, pady=5)
+        button2.grid(row=6,column=1, columnspan = 2, pady=5)
+        mx.destroy()
+        sea.mainloop()
+    def emailsearch():
+        def subemailsearch():
+            L=[]
+            s = entryX.get()
+            pbU=pd.read_csv('phonebookdata.csv')
+            phone_bookU=np.array(pbU)
+            for i in range(0,len(pbU)):
+                if (s == pb.Email[i]):
+                    L.append(phone_bookU[i])
+            if len(L) == 0:
+                Label1 = tk.Label(sea, text="Contact's email is not present, please try again" , height=3, bg="#D09B4E")
+                Label1.config(font=('Roboto' , 18))
+                Label1.grid(row=8,column=1, rowspan=2,padx=170)
+            else:
+                global test
+                test = False
+                def show():
+                    global test
+                    if test == True:
+                       labelX=tk.Label(disp, text="All records exhausted", font=("Roboto",20),bg="#D09B4E")
+                       labelX.grid(row=6,column=0,columnspan=5)
+                    else:
+                       for i,(Name,Number,Email,DOB,Category) in enumerate(L, start=1): #used to add an serial no
+                           Numberstr = str(Number)
+                           numtemp = Numberstr.strip('.0')
+                           listBox.insert('',"end", values=(i,Name,numtemp,Email,DOB,Category))
+                       test = True
+                sea.destroy()
+                disp = tk.Toplevel(m)
+                disp.minsize(1200,380)
+                disp.config(bg="#D09B4E")
+                style = ttk.Style(disp)
+                style.theme_use("clam")
+                disp.config(bg="#D09B4E")
+                label = tk.Label(disp, text="Here is what we found", font=("Roboto",32),bg="#D09B4E")
+                label.grid(row=0, columnspan=5)
+                # create Treeview with 6 columns
+                cols = ('S.No','Name','Number','Email','DOB','Category')
+                listBox = ttk.Treeview(disp,columns=cols, show='headings')
+                # set column headings
+                for col in cols:
+                  listBox.heading(col,text=col)    
+                listBox.grid(row=1, column=0, columnspan=3)
+                showall_rec= tk.Button(disp, text="Show all records", width=12, command=show,bg="#D09B4E")
+                showall_rec.config(font=('Roboto' , 10))
+                showall_rec.grid(row=4, column=0)
+                close_rec= tk.Button(disp, text="Back to menu", width=12, command=disp.destroy,bg="#D09B4E")
+                close_rec.config(font=('Roboto' , 10))
+                close_rec.grid(row=4, column=2)
+                disp.mainloop()
+        sea = tk.Toplevel(m)
+        sea.config(bg="#D09B4E")
+        sea.title('Search by Email')
+        sea.minsize(800,500)
+        Label1 = tk.Label(sea, text="Search by Email" , height=3, bg="#D09B4E")
+        Label2 = tk.Label(sea, text='Enter Email of contact to be searched', height=1, bg="#D09B4E")
+        entryX = tk.Entry(sea)
+        button1=tk.Button(sea,text="Search",padx=10,pady=7,command=subemailsearch, bg="#D09B4E")
+        button2 = tk.Button(sea, text = "Exit from menu",padx=10,pady=7,command =sea.destroy, bg="#D09B4E")
+        Label1.config(font=('Roboto' , 30))
+        Label2.config(font=('Roboto' , 18))
+        button1.config(font=('Roboto' , 15))
+        button2.config(font=('Roboto' , 15))
+        entryX.config(font=('Roboto' , 18))
+        entryX.grid(row=4,column=1, columnspan = 1, pady=5)
+        Label1.grid(row=1,column=1, rowspan=2,padx=250)
+        Label2.grid(row=3,column=1,columnspan=2)
+        button1.grid(row=5,column=1, columnspan = 2, pady=5)
+        button2.grid(row=6,column=1, columnspan = 2, pady=5)
+        mx.destroy()
+        sea.mainloop()
+    def DOBsearch():
+        def subDOBsearch():
+            L=[]
+            s = entryX.get()
+            pbU=pd.read_csv('phonebookdata.csv')
+            phone_bookU=np.array(pbU)
+            for i in range(0,len(pbU)):
+                if (s == pb.DOB[i]):
+                    L.append(phone_bookU[i])
+            if len(L) == 0:
+                Label1 = tk.Label(sea, text="Contact's DOB is not present, please try again" , height=3, bg="#C28C3F")
+                Label1.config(font=('Roboto' , 18))
+                Label1.grid(row=8,column=1, rowspan=2,padx=170)
+            else:
+                global test
+                test = False
+                def show():
+                    global test
+                    if test == True:
+                       labelX=tk.Label(disp, text="All records exhausted", font=("Roboto",20),bg="#C28C3F")
+                       labelX.grid(row=6,column=0,columnspan=5)
+                    else:
+                       for i,(Name,Number,Email,DOB,Category) in enumerate(L, start=1): #used to add an serial no
+                           Numberstr = str(Number)
+                           numtemp = Numberstr.strip('.0')
+                           listBox.insert('',"end", values=(i,Name,numtemp,Email,DOB,Category))
+                       test = True
+                sea.destroy()
+                disp = tk.Toplevel(m)
+                disp.minsize(1200,380)
+                disp.config(bg="#C28C3F")
+                style = ttk.Style(disp)
+                style.theme_use("clam")
+                disp.config(bg="#C28C3F")
+                label = tk.Label(disp, text="Here is what we found", font=("Roboto",32),bg="#C28C3F")
+                label.grid(row=0, columnspan=5)
+                # create Treeview with 6 columns
+                cols = ('S.No','Name','Number','Email','DOB','Category')
+                listBox = ttk.Treeview(disp,columns=cols, show='headings')
+                # set column headings
+                for col in cols:
+                  listBox.heading(col,text=col)    
+                listBox.grid(row=1, column=0, columnspan=3)
+                showall_rec= tk.Button(disp, text="Show all records", width=12, command=show,bg="#C28C3F")
+                showall_rec.config(font=('Roboto' , 10))
+                showall_rec.grid(row=4, column=0)
+                close_rec= tk.Button(disp, text="Back to menu", width=12, command=disp.destroy,bg="#C28C3F")
+                close_rec.config(font=('Roboto' , 10))
+                close_rec.grid(row=4, column=2)
+                disp.mainloop()
+        sea = tk.Toplevel(m)
+        sea.config(bg="#C28C3F")
+        sea.title('Search by Date of birth')
+        sea.minsize(800,500)
+        Label1 = tk.Label(sea, text="Search by DOB" , height=3, bg="#C28C3F")
+        Label2 = tk.Label(sea, text='Enter DOB of contact to be searched', height=1, bg="#C28C3F")
+        entryX = tk.Entry(sea)
+        button1=tk.Button(sea,text="Search",padx=10,pady=7,command=subDOBsearch, bg="#C28C3F")
+        button2 = tk.Button(sea, text = "Exit from menu",padx=10,pady=7,command =sea.destroy, bg="#C28C3F")
+        Label1.config(font=('Roboto' , 30))
+        Label2.config(font=('Roboto' , 18))
+        button1.config(font=('Roboto' , 15))
+        button2.config(font=('Roboto' , 15))
+        entryX.config(font=('Roboto' , 18))
+        entryX.grid(row=4,column=1, columnspan = 1, pady=5)
+        Label1.grid(row=1,column=1, rowspan=2,padx=250)
+        Label2.grid(row=3,column=1,columnspan=2)
+        button1.grid(row=5,column=1, columnspan = 2, pady=5)
+        button2.grid(row=6,column=1, columnspan = 2, pady=5)
+        mx.destroy()
+        sea.mainloop()
+    def CATsearch():
+        def subCATsearch():
+            L=[]
+            s = entryX.get()
+            pbU=pd.read_csv('phonebookdata.csv')
+            phone_bookU=np.array(pbU)
+            for i in range(0,len(pbU)):
+                if (s == pb.Category[i]):
+                    L.append(phone_bookU[i])
+            if len(L) == 0:
+                Label1 = tk.Label(sea, text="Category is not present, please try again" , height=3, bg="#B88235")
+                Label1.config(font=('Roboto' , 18))
+                Label1.grid(row=8,column=1, rowspan=2,padx=170)
+            else:
+                global test
+                test = False
+                def show():
+                    global test
+                    if test == True:
+                       labelX=tk.Label(disp, text="All records exhausted", font=("Roboto",20),bg="#B88235")
+                       labelX.grid(row=6,column=0,columnspan=5)
+                    else:
+                       for i,(Name,Number,Email,DOB,Category) in enumerate(L, start=1): #used to add an serial no
+                           Numberstr = str(Number)
+                           numtemp = Numberstr.strip('.0')
+                           listBox.insert('',"end", values=(i,Name,numtemp,Email,DOB,Category))
+                       test = True
+                sea.destroy()
+                disp = tk.Toplevel(m)
+                disp.minsize(1200,380)
+                disp.config(bg="#B88235")
+                style = ttk.Style(disp)
+                style.theme_use("clam")
+                disp.config(bg="#B88235")
+                label = tk.Label(disp, text="Here is what we found", font=("Roboto",32),bg="#B88235")
+                label.grid(row=0, columnspan=5)
+                # create Treeview with 6 columns
+                cols = ('S.No','Name','Number','Email','DOB','Category')
+                listBox = ttk.Treeview(disp,columns=cols, show='headings')
+                # set column headings
+                for col in cols:
+                  listBox.heading(col,text=col)    
+                listBox.grid(row=1, column=0, columnspan=3)
+                showall_rec= tk.Button(disp, text="Show all records", width=12, command=show,bg="#B88235")
+                showall_rec.config(font=('Roboto' , 10))
+                showall_rec.grid(row=4, column=0)
+                close_rec= tk.Button(disp, text="Back to menu", width=12, command=disp.destroy,bg="#B88235")
+                close_rec.config(font=('Roboto' , 10))
+                close_rec.grid(row=4, column=2)
+                disp.mainloop()
+        sea = tk.Toplevel(m)
+        sea.config(bg="#B88235")
+        sea.title('Search by category')
+        sea.minsize(800,500)
+        Label1 = tk.Label(sea, text="Search by category" , height=3, bg="#B88235")
+        Label2 = tk.Label(sea, text='Enter category of contact to be searched', height=1, bg="#B88235")
+        entryX = tk.Entry(sea)
+        button1=tk.Button(sea,text="Search",padx=10,pady=7,command=subCATsearch, bg="#B88235")
+        button2 = tk.Button(sea, text = "Exit from menu",padx=10,pady=7,command =sea.destroy, bg="#B88235")
+        Label1.config(font=('Roboto' , 30))
+        Label2.config(font=('Roboto' , 18))
+        button1.config(font=('Roboto' , 15))
+        button2.config(font=('Roboto' , 15))
+        entryX.config(font=('Roboto' , 18))
+        entryX.grid(row=4,column=1, columnspan = 1, pady=5)
+        Label1.grid(row=1,column=1, rowspan=2,padx=250)
+        Label2.grid(row=3,column=1,columnspan=2)
+        button1.grid(row=5,column=1, columnspan = 2, pady=5)
+        button2.grid(row=6,column=1, columnspan = 2, pady=5)
+        mx.destroy()
+        sea.mainloop()
+
+    mx=tk.Toplevel(m)
+    mx.geometry('1300x680')
+    mx.title('Seach a Contact')
+    mx.configure(bg='#C98E3F')
+    Label1 = tk.Label(mx, text='SEARCH BY' , height=3, bg="#C98E3F")
+    button1 = tk.Button(mx, text = "NAME", width=10, height= 2, command =namesearch, bg='#DDAE66')
+    button2 = tk.Button(mx, text = "NUMBER", width=10, height= 2, command =nosearch, bg="#D3A45A")
+    button3 = tk.Button(mx, text = "EMAIL", width=10, height= 2 ,command = emailsearch ,bg="#D09B4E")
+    button4 = tk.Button(mx, text = "DOB", width=10, height= 2, command = DOBsearch, bg="#C28C3F")
+    button5 = tk.Button(mx, text = "CATEGORY", width=10, height= 2, command = CATsearch, bg="#B88235")
+    #button6 = tk.Button(mx, text = "Exit", width=15, height= 1, command = mx.destroy, bg="#EBC06A")
+    Label1.config(font=('Algerian' , 45))
+    button1.config(font=('Roboto' , 27))
+    button2.config(font=('Roboto' , 27))
+    button3.config(font=('Roboto' , 27))
+    button4.config(font=('Roboto' , 27))
+    button5.config(font=('Roboto' , 27))
+    #button6.config(font=('Roboto' , 15))
+    Label1.grid(row=1,column=2, rowspan = 5, padx=10,pady=70)
+    button1.grid(row=1,column=2,padx=10,pady=30)
+    button2.grid(row=3,column=0,padx=10,pady=70)
+    button3.grid(row=3,column=4,padx=10,pady=70)
+    button4.grid(row=5, column=1,padx=10,pady=70)
+    button5.grid(row=5, column=3,padx=10,pady=70)
+    #button6.grid(row=6, column=0)
+    mx.mainloop()
+
+def display_all():
+    m.iconify()
+    pb2=pd.read_csv('phonebookdata.csv')
+    phone_book2=np.array(pb2)
+    global test
+    test = False
+    def show():
+        global test
+        if test == True:
+           labelX=tk.Label(disp, text="No records or all records exhausted", font=("Roboto",20),bg="#EBC06A")
+           labelX.grid(row=6,column=0,columnspan=5)
+        else:
+           for i,(Name,Number,Email,DOB,Category) in enumerate(phone_book2, start=1): #used to add an serial no
+               Numberstr = str(Number)
+               numtemp = Numberstr.strip('.0')
+               listBox.insert('',"end", values=(i,Name,numtemp,Email,DOB,Category))
+           test = True
+    disp = tk.Toplevel(m)
+    disp.minsize(1200,380)
+    disp.config(bg="#EBC06A")
+    style = ttk.Style(disp)
+    style.theme_use("clam")
+    disp.config(bg="#EBC06A")
+    label = tk.Label(disp, text="Phonebook Records", font=("Roboto",32),bg="#EBC06A")
+    label.grid(row=0, columnspan=5)
+    # create Treeview with 6 columns
+    cols = ('S.No','Name','Number','Email','DOB','Category')
+    listBox = ttk.Treeview(disp,columns=cols, show='headings')
+    # set column headings
+    for col in cols:
+      listBox.heading(col,text=col)    
+    listBox.grid(row=1, column=0, columnspan=3)
+    showall_rec= tk.Button(disp, text="Show all records", width=12, command=show,bg="#EBC06A")
+    showall_rec.config(font=('Roboto' , 10))
+    showall_rec.grid(row=4, column=0)
+    close_rec= tk.Button(disp, text="Exit", width=12, command=disp.destroy,bg="#EBC06A")
+    close_rec.config(font=('Roboto' , 10))
+    close_rec.grid(row=4, column=2)
+    disp.mainloop()
+
+def main():
+    m.geometry('1300x650')
+    m.title('Phonebook')
+    m.configure(bg='#EFD499')
+    img = ImageTk.PhotoImage(file = 'texture.jpg')
+    label = tk.Label(m, image=img)
+    label.place(x=0,y=0)
+    #canvas
+    mc= tk.Canvas(m, width=800)
+    mc.pack(fill='both', expand = True)
+    mc.create_image(0,0,image=img,anchor='nw')
+    mc.create_text(400,320,text='Welcome to Phonebook!!',font=('Roboto' , 40))
+    button1 = tk.Button(m, text = "Add new Contact", width=20, height= 2, command =add , bg='#EFD499')
+    button2 = tk.Button(m, text = "Remove a Contact", width=20, height= 2, command =deleting, bg="#EFD499")
+    button3 = tk.Button(m, text = "Search a Contact", width=20, height= 2 ,command = search_existing ,bg="#EFD499")
+    button4 = tk.Button(m, text = "Display Phonebook", width=20, height= 2, command = display_all, bg="#EFD499")
+    button5 = tk.Button(m, text = "Exit", width=10, height= 2, command = m.destroy, bg="#EFD499")
+    button1.config(font=('Roboto' , 25))
+    button2.config(font=('Roboto' , 25))
+    button3.config(font=('Roboto' , 25))
+    button4.config(font=('Roboto' , 25))
+    button5.config(font=('Roboto' , 15))
+    button1.place(x=900,y=40)
+    button2.place(x=900,y=190)
+    button3.place(x=900,y=340)
+    button4.place(x=900,y=490)
+    button5.place(x=300,y=520)
+    m.mainloop()
+
+main()
+
